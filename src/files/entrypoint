@@ -4,7 +4,8 @@ set -e
 
 USER_LIST_FILE=/root/users.txt
 CONFIG_FILE=/root/vsftpd.conf
-DB=/etc/vsftpd/virtual-users.db
+CONF_PATH=/etc/vsftpd
+DB=$CONF_PATH/virtual-users.db
 FTP_HOME=/var/ftp
 
 log() {
@@ -15,7 +16,11 @@ log() {
 
 virtual_users() {
     log "new virtual users database create.."
-    rm -f $DB
+    if ! [ -d $CONF_PATH ]; then
+        mkdir -p $CONF_PATH
+    else
+        rm -f $DB
+    fi
     db5.3_load -T -t hash -f $@ $DB
 
     log "virtual users home's dirs create.."
