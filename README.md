@@ -4,11 +4,11 @@ Docker Image for vsftpd servece. [vsftpd](https://security.appspot.com/vsftpd.ht
 # Usage
 
 ```
-docker run -p 20-21:20-21  -p 7000-7100:7000-7100 \ 
-    -v /var/ftp:/var/ftp -v /root/docker/ftp:/root \
-    --name vsftpd megbeguk/vsftpd
+# docker run -p 20-21:20-21  -p 7000-7100:7000-7100 \ 
+    -v /var/ftp:/var/ftp -v /root/vsftpd_conf:/root \
+    megbeguk/vsftpd
 ```
-Put in Host folder /root/docker/ftp file users.txt:
+Put in Host folder /root/vsftpd_conf file users.txt:
 
 ```
 user1
