@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -e
+
+USER_LIST_FILE=/root/users.txt
+CONFIG_FILE=/root/vsftpd.conf
+DB=/etc/vsftpd/virtual-users.db
+FTP_HOME=/var/ftp
+
+log() {
+  if [[ "$@" ]]; then echo "[VSFTPD `date +'%T'`] $@";
+  else echo;
+  fi
+}
+
+virtual_users() {
+    log "new virtual users database create.."
+    rm -f $DB
+    db5.3_load -T -t hash -f $@ $DB
+
+    log "virtual users home's dirs create.."
+    while read line
+    do
+        if [[ "$line" ]]; then
+            mkdir -p $FTP_HOME/$line
+            chown ftp:ftp $FTP_HOME/$line
+            read
+        fi
+    done < $@
+}
+
+
+
+if ! [ -d $FTP_HOME ]; then
+    log "root ftp dir create.."
+    mkdir -p -m 744 $FTP_HOME
+fi
+
+mkdir -p /var/run/vsftpd/empty
+chgrp ftp $FTP_HOME
+usermod --home $FTP_HOME ftp
+
+
+
+if [[ "$@" ]]; then
+    exec "$@"
+else
+    if [ -f $USER_LIST_FILE ]; then
+        virtual_users $USER_LIST_FILE
+    fi
+    if [ -f $CONFIG_FILE ]; then
+        log "vsftpd config update"
+        cp $CONFIG_FILE /etc/
+    fi
+
+    log "daemon starting.."
+    vsftpd
+fi
+
