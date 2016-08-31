@@ -8,9 +8,7 @@ Docker Image for vsftpd servece. [vsftpd](https://security.appspot.com/vsftpd.ht
     -v /var/ftp:/var/ftp \
     megbeguk/vsftpd
 ```
-Put in Host folder /var/ftp files: vsftpd.conf, users.txt.
-
-vsftpd.conf - config file for vsftpd.
+Put in Host folder /var/ftp file: users.txt.
 
 users.txt - file with list of virtual useres:
 ```
@@ -22,3 +20,12 @@ pass2
 ```
 
 /var/ftp foder in Host is root ftp folder for virtual useres home's folders.
+
+Change passive ports range:
+
+```
+# docker run -p 20-21:20-21  -p 7000-7010:7000-7010 \
+    -e "PASV_MIN_PORT=7000" -e "PASV_MAX_PORT=7010" \
+    -v /tmp/FTP:/var/ftp \
+    megbeguk/vsftpd
+```
