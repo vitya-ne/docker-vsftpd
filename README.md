@@ -4,11 +4,11 @@ Docker Image for vsftpd servece. [vsftpd](https://security.appspot.com/vsftpd.ht
 # Usage
 
 ```
-# docker run -p 20-21:20-21  -p 7000-7100:7000-7100 \ 
-    -v /var/ftp:/var/ftp -v /root/vsftpd_conf:/root \
+# docker run -p 20-21:20-21  -p 7000-7050:7000-7050 \
+    -v /var/ftp:/var/ftp \
     megbeguk/vsftpd
 ```
-Put in Host folder /root/vsftpd_conf files: vsftpd.conf, users.txt.
+Put in Host folder /var/ftp files: vsftpd.conf, users.txt.
 
 vsftpd.conf - config file for vsftpd.
 

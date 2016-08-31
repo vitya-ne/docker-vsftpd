@@ -11,6 +11,9 @@ RUN apt-get update && \
 
 COPY files /
 
-EXPOSE 20-21 7000-7100
+ENV PASV_MIN_PORT="7000"
+ENV PASV_MAX_PORT="7050"
+# EXPOSE 20-21
+# ${PASV_MIN_PORT}-${PASV_MAX_PORT}
 
 ENTRYPOINT ["/entrypoint"]

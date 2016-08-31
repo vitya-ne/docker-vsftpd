@@ -2,11 +2,13 @@
 
 set -e
 
-USER_LIST_FILE=/root/users.txt
-CONFIG_FILE=/root/vsftpd.conf
 CONF_PATH=/etc/vsftpd
+CONF_FILE=vsftpd.conf
 DB=$CONF_PATH/virtual-users.db
 FTP_HOME=/var/ftp
+USER_LIST_FILE=$FTP_HOME/users.txt
+CONFIG_FILE=$FTP_HOME/$CONF_FILE
+
 
 log() {
   if [[ "$@" ]]; then echo "[VSFTPD `date +'%T'`] $@";
@@ -35,10 +37,9 @@ virtual_users() {
 }
 
 
-
 if ! [ -d $FTP_HOME ]; then
     log "root ftp dir create.."
-    mkdir -p -m 744 $FTP_HOME
+    mkdir -p -m 755 $FTP_HOME
 fi
 
 mkdir -p /var/run/vsftpd/empty
@@ -46,18 +47,24 @@ chgrp ftp $FTP_HOME
 usermod --home $FTP_HOME ftp
 
 
+if [ -f $USER_LIST_FILE ]; then
+    virtual_users $USER_LIST_FILE
+    rm $USER_LIST_FILE
+fi
+
+if [ -f $CONFIG_FILE ]; then
+    log "vsftpd config update"
+    cp $CONFIG_FILE /etc/
+    rm $CONFIG_FILE
+else
+    log "vsftpd config set passive port range: $PASV_MIN_PORT-$PASV_MAX_PORT"
+    sed -i "s/^pasv_min_port=.*/pasv_min_port=$PASV_MIN_PORT/" /etc/$CONF_FILE
+    sed -i "s/^pasv_max_port=.*/pasv_max_port=$PASV_MAX_PORT/" /etc/$CONF_FILE
+fi
 
 if [[ "$@" ]]; then
     exec "$@"
 else
-    if [ -f $USER_LIST_FILE ]; then
-        virtual_users $USER_LIST_FILE
-    fi
-    if [ -f $CONFIG_FILE ]; then
-        log "vsftpd config update"
-        cp $CONFIG_FILE /etc/
-    fi
-
     log "daemon starting.."
     vsftpd
 fi
